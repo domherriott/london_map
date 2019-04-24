@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+        <link rel="stylesheet" href="index.css">
+        <script type="text/javascript" src="../d3.min.js"></script>
+        <script type="text/javascript" src="../jquery.min.js"></script>
+       
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+   crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+   integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+   crossorigin=""></script>
+         <script src="http://maps.stamen.com/js/tile.stamen.js"></script>
+        
+        
+    </head>
+    
+     <div id="mapid"></div>
+    
+    
+    <script>
+        
+        var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+        
+            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            maxZoom: 18,
+            id: 'mapbox.streets',
+            accessToken: 'pk.eyJ1IjoiZG9taGVycmlvdHQiLCJhIjoiY2p1M3lsMzc1MHE2dTRldGF3NDU4d2NteSJ9.ce9_ZfN5bXyRFNsk9Mw2GQ'
+        }).addTo(mymap);
+        
+        
+        /*
+        async function fStations(){
+            let response = await fetch('https://raw.githubusercontent.com/oobrien/vis/master/tube/data/tfl_stations.json');
+            let json = await response.json();
+            return json;
+        };
+        
+        async function fLines(){
+            let response = await fetch('https://raw.githubusercontent.com/oobrien/vis/master/tube/data/tfl_lines.json');
+            let json = await response.json();
+            return json;
+        };
+        
+        
+        async function tfl_api_search(search){
+            let response = await fetch('https://api.tfl.gov.uk/StopPoint/Search?query=' + search);
+            let json = await response.json();
+            return json;
+        }
+
+        async function tube_stop_list(){
+            let response = await fetch('https://raw.githubusercontent.com/domherriott/london_map/master/tube_stop_list.json');
+            let json = await response.json();
+            return json;
+        }
+        */
+        
+  
+        async function tfl_arrival(id){
+            let response = await fetch('https://api.tfl.gov.uk/StopPoint/' + id + '/arrivals');
+            let json = await response.json();
+            return json;
+        }
+        
+        /*
+        async function linesGeojson(){
+            let response = await fetch('https://raw.githubusercontent.com/oobrien/vis/master/tube/data/tfl_lines.json')
+            let json = await response.json();
+            return json;
+        }
+        
+        */
+        
+        async function Lines(){
+            let response = await fetch('https://raw.githubusercontent.com/domherriott/london_map/master/dLines.json')
+            let json = await response.json();
+            return json;
+        }
+        
+        async function Stops(){
+            let response = await fetch('https://raw.githubusercontent.com/domherriott/london_map/master/dStops.json')
+            let json = await response.json();
+            return json;
+        }
+        
+        async function lineGeo(){
+            let response = await fetch('https://raw.githubusercontent.com/domherriott/london_map/master/lineGeo.json')
+            let json = await response.json();
+            return json;
+        }
+
+	/*
+        drawTubeLines = linesGeojson().then(function(result){
+            let lines = result['features']
+            
+            
+            //Victoria
+            let coords = []
+            for (i=26; i<41; i++ )
+                coords = coords.concat(lines[i]['geometry']['coordinates'])
+                        
+            var victoria = {
+                "type": "LineString",
+                "coordinates": coords
+            };
+
+            var victoriaStyle = {
+                "color": "#0099CC",
+                "weight": 5,
+                "opacity": 0.65
+            };
+
+            L.geoJSON(victoria, {
+                style: victoriaStyle
+                }).addTo(mymap);   
+                
+                
+            })
+            */
+        
+        drawLines = lineGeo().then(function(result){
+            let lines = result
+            
+            
+            //Victoria
+            let coords = lines['Victoria']
+     
+            var victoria = {
+                "type": "LineString",
+                "coordinates": coords
+            };
+
+            var victoriaStyle = {
+                "color": "#0099CC",
+                "weight": 5,
+                "opacity": 0.65
+            };
+
+            L.geoJSON(victoria, {
+                style: victoriaStyle
+                }).addTo(mymap);   
+                
+                
+            })
+            
+        
+        
+        function drawStop(easting, northing, markerText){
+            let marker = L.circle([easting, northing], {
+            color: 'black',
+            fillColor: 'white',
+            fillOpacity: 0.5,
+            radius: 50
+            }).bindPopup(markerText);
+                        
+            marker.on('mouseover', function (e) {
+                this.openPopup();
+            });
+                        
+            marker.on('mouseout', function (e) {
+                this.closePopup();
+            });
+                    
+            marker.addTo(mymap);
+        }
+        
+        
+        
+        
+        
+        stops = Stops().then(function(result){
+            
+            let stopList = result;
+            
+            for (let i in stopList){
+                thisStop = stopList[i]
+                console.log(stopList[i]['name']);
+                drawStop(thisStop['lat'], thisStop['lon'], thisStop['name'])
+            }
+            
+        })
+        
+      /*
+        tubeStopList = tube_stop_list().then(function(result){
+            
+                let stopList = result
+                for (let i in stopList){
+                    let search = stopList[i]['Name']
+                    
+                    tubeStop = tfl_api_search(search).then(function(result){
+                            
+                            //console.log(result)
+                            let stop = result['matches'][0]
+                            //console.log(stop)
+                            let easting = stop['lat']
+                            let northing = stop['lon'];
+                            let id = stop['id']
+                            let name = stop['name'];
+                        
+                            
+                            let ug_name_test = name.substring(name.length - 20, name.length);
+                            if (ug_name_test == ' Underground Station'){
+                                name = name.substring(0, name.length - 20)
+                            }
+                        
+                            tfl_arrivals_call = tfl_arrival(id).then(function(result){
+                                let arrivals = result;
+                                let arrSummary = [];
+                                
+                                if (name == 'London Bridge'){
+                                    console.log(arrSummary);
+                                    console.log(id);
+                                }
+                                
+                                for (let k in arrivals){
+                                    arrSummary.push([arrivals[k]['lineName'], arrivals[k]['towards'], Math.round(arrivals[k]['timeToStation']/60)])
+                                }
+                                arrSummary = arrSummary.sort(function(a,b){return a[2]>b[2];});
+                                
+                                function Comparator(a, b) {
+                                    if (a[2] < b[2]) return -1;
+                                    if (a[2] > b[2]) return 1;
+                                    return 0;
+                                }
+                                
+                                arrSummary = arrSummary.sort(Comparator);
+                                
+                                let markerText = "<u><b>" + name + "</b></u>"
+                            
+                                
+                                for (let l in arrSummary){
+                                    markerText = markerText + "<br><br><b>" + arrSummary[l][2] + " mins </b>" 
+                                        + "<br>" + arrSummary[l][0] + "  -  " + arrSummary[l][1];
+                                    if (l == 4) {
+                                        break
+                                    }
+                                }
+                                
+                            
+                        
+                                let marker = L.circle([easting, northing], {
+                                    color: 'black',
+                                    fillColor: 'white',
+                                    fillOpacity: 0.5,
+                                    radius: 50
+                                    }).bindPopup(markerText);
+                        
+                                marker.on('mouseover', function (e) {
+                                    this.openPopup();
+                                });
+                        
+                                marker.on('mouseout', function (e) {
+                                    this.closePopup();
+                                });
+                    
+                                marker.addTo(mymap);
+                                
+                                
+                            })
+                        
+                        
+                    })
+                    
+                }
+            
+            
+            
+            
+            
+        })
+        */
+
+        
+
+        
+   
+
+    </script>
+    
+</html>
