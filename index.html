@@ -126,25 +126,123 @@
             let lines = result
             
             
-            //Victoria
-            let coords = lines['Victoria']
-     
-            var victoria = {
-                "type": "LineString",
-                "coordinates": coords
+            //Styles
+            var bakerlooStyle = {
+                "color": "#996633",
+                "weight": 5,
+                "opacity": 0.65
             };
-
-            var victoriaStyle = {
+            
+            var centralStyle = {
+                "color": "#CC3333",
+                "weight": 5,
+                "opacity": 0.65
+            };
+            
+            var circleStyle = {
+                "color": "#FFCC00",
+                "weight": 5,
+                "opacity": 0.65
+            };
+            
+            var districtStyle = {
+                "color": "#006633",
+                "weight": 5,
+                "opacity": 0.65
+            };
+            
+            var hammerStyle = {
+                "color": "#CC9999",
+                "weight": 5,
+                "opacity": 0.65
+            };
+            
+            var jubileeStyle = {
+                "color": "#868F98",
+                "weight": 5,
+                "opacity": 0.65
+            };
+            
+            var metroStyle = {
+                "color": "#660066",
+                "weight": 5,
+                "opacity": 0.65
+            };
+            
+            var northernStyle = {
+                "color": "#000000",
+                "weight": 5,
+                "opacity": 0.65
+            };
+            
+            var piccadillyStyle = {
+                "color": "#000099",
+                "weight": 5,
+                "opacity": 0.65
+            };
+            
+             var victoriaStyle = {
                 "color": "#0099CC",
                 "weight": 5,
                 "opacity": 0.65
             };
+            
+            var waterlooStyle = {
+                "color": "#66CCCC",
+                "weight": 5,
+                "opacity": 0.65
+            };
+            
+            
+            //Victoria
+            let victoriaCoords = lines['Victoria']
+     
+            var victoria = {
+                "type": "LineString",
+                "coordinates": victoriaCoords
+            };
+
+
 
             L.geoJSON(victoria, {
                 style: victoriaStyle
-                }).addTo(mymap);   
-                
-                
+                }).addTo(mymap); 
+            
+            //Piccadilly
+            let piccadillyCoordsA = lines['Piccadilly']['A'] 
+            let piccadillyCoordsB = lines['Piccadilly']['B'] 
+            let piccadillyCoordsC = lines['Piccadilly']['C'] 
+    
+
+            var piccadillyA = {
+                "type": "LineString",
+                "coordinates": piccadillyCoordsA
+            };
+            
+            var piccadillyB = {
+                "type": "LineString",
+                "coordinates": piccadillyCoordsB
+            };
+            
+            var piccadillyC = {
+                "type": "LineString",
+                "coordinates": piccadillyCoordsC
+            };
+
+
+            L.geoJSON(piccadillyA, {
+                style: piccadillyStyle
+                }).addTo(mymap); 
+
+        
+            L.geoJSON(piccadillyB, {
+                style: piccadillyStyle
+                }).addTo(mymap); 
+
+            
+            L.geoJSON(piccadillyC, {
+                style: piccadillyStyle
+                }).addTo(mymap); 
             })
             
         
@@ -178,7 +276,6 @@
             
             for (let i in stopList){
                 thisStop = stopList[i]
-                console.log(stopList[i]['name']);
                 drawStop(thisStop['lat'], thisStop['lon'], thisStop['name'])
             }
             
