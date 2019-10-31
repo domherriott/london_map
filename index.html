@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
-        
+
         <link rel="stylesheet" href="index.css">
         <script type="text/javascript" src="d3.min.js"></script>
         <script type="text/javascript" src="jquery.min.js"></script>
-       
+
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
    integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
    crossorigin=""/>
@@ -13,80 +13,83 @@
    integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
    crossorigin=""></script>
          <script src="http://maps.stamen.com/js/tile.stamen.js"></script>
-        
-        
+
+
     </head>
-    
+
      <div id="mapid"></div>
-    
-    
+
+
     <script>
-        
+
         var mymap = L.map('mapid').setView([51.505, -0.09], 13);
-        
+
             L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
             maxZoom: 18,
             id: 'mapbox.streets',
             accessToken: 'pk.eyJ1IjoiZG9taGVycmlvdHQiLCJhIjoiY2p1M3lsMzc1MHE2dTRldGF3NDU4d2NteSJ9.ce9_ZfN5bXyRFNsk9Mw2GQ'
         }).addTo(mymap);
-        
-        
+
+
         /*
         async function fStations(){
             let response = await fetch('https://raw.githubusercontent.com/oobrien/vis/master/tube/data/tfl_stations.json');
             let json = await response.json();
             return json;
         };
-        
+
         async function fLines(){
             let response = await fetch('https://raw.githubusercontent.com/oobrien/vis/master/tube/data/tfl_lines.json');
             let json = await response.json();
             return json;
         };
-        
-        
+
+        */
+
         async function tfl_api_search(search){
             let response = await fetch('https://api.tfl.gov.uk/StopPoint/Search?query=' + search);
             let json = await response.json();
             return json;
         }
 
+
+
         async function tube_stop_list(){
-            let response = await fetch('https://raw.githubusercontent.com/domherriott/london_map/master/tube_stop_list.json');
+            let response = await fetch('https://raw.githubusercontent.com/domherriott/london_map/master/Data/tube_stop_list.json');
             let json = await response.json();
             return json;
         }
-        */
-        
-  
+
+
+
         async function tfl_arrival(id){
             let response = await fetch('https://api.tfl.gov.uk/StopPoint/' + id + '/arrivals');
             let json = await response.json();
             return json;
         }
-        
+
         /*
         async function linesGeojson(){
             let response = await fetch('https://raw.githubusercontent.com/oobrien/vis/master/tube/data/tfl_lines.json')
             let json = await response.json();
             return json;
         }
-        
+
         */
-        
+
         async function Lines(){
             let response = await fetch('https://raw.githubusercontent.com/domherriott/london_map/master/Data/dLines.json')
             let json = await response.json();
             return json;
         }
-        
+
         async function Stops(){
             let response = await fetch('https://raw.githubusercontent.com/domherriott/london_map/master/Data/dStops.json')
             let json = await response.json();
             return json;
         }
-        
+
         async function lineGeo(){
             let response = await fetch('https://raw.githubusercontent.com/domherriott/london_map/master/Data/lineGeo.json')
             let json = await response.json();
@@ -96,13 +99,13 @@
 	/*
         drawTubeLines = linesGeojson().then(function(result){
             let lines = result['features']
-            
-            
+
+
             //Victoria
             let coords = []
             for (i=26; i<41; i++ )
                 coords = coords.concat(lines[i]['geometry']['coordinates'])
-                        
+
             var victoria = {
                 "type": "LineString",
                 "coordinates": coords
@@ -116,114 +119,189 @@
 
             L.geoJSON(victoria, {
                 style: victoriaStyle
-                }).addTo(mymap);   
-                
-                
+                }).addTo(mymap);
+
+
             })
             */
-        
+
         drawLines = lineGeo().then(function(result){
             let lines = result
-            
-            
+
+            varLineOpacity = 0.5
+            varLineWeight = 5
+
             //Styles
             var bakerlooStyle = {
                 "color": "#996633",
-                "weight": 5,
-                "opacity": 0.65
+                "weight": varLineWeight,
+                "opacity": varLineOpacity
             };
-            
+
             var centralStyle = {
                 "color": "#CC3333",
-                "weight": 5,
-                "opacity": 0.65
+                "weight": varLineWeight,
+                "opacity": varLineOpacity
             };
-            
+
             var circleStyle = {
                 "color": "#FFCC00",
-                "weight": 5,
-                "opacity": 0.65
+                "weight": varLineWeight,
+                "opacity": varLineOpacity
             };
-            
+
             var districtStyle = {
                 "color": "#006633",
-                "weight": 5,
-                "opacity": 0.65
+                "weight": varLineWeight,
+                "opacity": varLineOpacity
             };
-            
+
             var hammerStyle = {
                 "color": "#CC9999",
-                "weight": 5,
-                "opacity": 0.65
+                "weight": varLineWeight,
+                "opacity": varLineOpacity
             };
-            
+
             var jubileeStyle = {
                 "color": "#868F98",
-                "weight": 5,
-                "opacity": 0.65
+                "weight": varLineWeight,
+                "opacity": varLineOpacity
             };
-            
+
             var metroStyle = {
                 "color": "#660066",
-                "weight": 5,
-                "opacity": 0.65
+                "weight": varLineWeight,
+                "opacity": varLineOpacity
             };
-            
+
             var northernStyle = {
                 "color": "#000000",
-                "weight": 5,
-                "opacity": 0.65
+                "weight": varLineWeight,
+                "opacity": varLineOpacity
             };
-            
+
             var piccadillyStyle = {
                 "color": "#000099",
-                "weight": 5,
-                "opacity": 0.65
+                "weight": varLineWeight,
+                "opacity": varLineOpacity
             };
-            
+
              var victoriaStyle = {
                 "color": "#0099CC",
-                "weight": 5,
-                "opacity": 0.65
+                "weight": varLineWeight,
+                "opacity": varLineOpacity
             };
-            
+
             var waterlooStyle = {
                 "color": "#66CCCC",
-                "weight": 5,
-                "opacity": 0.65
+                "weight": varLineWeight,
+                "opacity": varLineOpacity
             };
-            
-            
-            //Victoria
-            let victoriaCoords = lines['Victoria']
-     
-            var victoria = {
+
+            //Bakerloo
+            let bakerlooCoords = lines['Bakerloo']
+
+            var bakerloo = {
                 "type": "LineString",
-                "coordinates": victoriaCoords
+                "coordinates": bakerlooCoords
+            };
+
+            L.geoJSON(bakerloo, {
+                style: bakerlooStyle
+                }).addTo(mymap);
+
+              //District
+            let districtCoordsA = lines['District']['A']
+            let districtCoordsB = lines['District']['B']
+            let districtCoordsC = lines['District']['C']
+
+
+            var districtA = {
+                "type": "LineString",
+                "coordinates": districtCoordsA
+            };
+
+            var districtB = {
+                "type": "LineString",
+                "coordinates": districtCoordsB
+            };
+
+            var districtC = {
+                "type": "LineString",
+                "coordinates": districtCoordsC
             };
 
 
+            L.geoJSON(districtA, {
+                style: districtStyle
+                }).addTo(mymap);
 
-            L.geoJSON(victoria, {
-                style: victoriaStyle
-                }).addTo(mymap); 
-            
+
+            L.geoJSON(districtB, {
+                style: districtStyle
+                }).addTo(mymap);
+
+
+            L.geoJSON(districtC, {
+                style: districtStyle
+                }).addTo(mymap);
+
+             //Northern
+            let northernCoordsA = lines['Northern']['A']
+            let northernCoordsB = lines['Northern']['B']
+            let northernCoordsC = lines['Northern']['C']
+
+
+            var northernA = {
+                "type": "LineString",
+                "coordinates": northernCoordsA
+            };
+
+            var northernB = {
+                "type": "LineString",
+                "coordinates": northernCoordsB
+            };
+
+            var northernC = {
+                "type": "LineString",
+                "coordinates": northernCoordsC
+            };
+
+
+            L.geoJSON(northernA, {
+                style: northernStyle
+                }).addTo(mymap);
+
+
+            L.geoJSON(northernB, {
+                style: northernStyle
+                }).addTo(mymap);
+
+
+            L.geoJSON(northernC, {
+                style: northernStyle
+                }).addTo(mymap);
+
+
+
+
+
             //Piccadilly
-            let piccadillyCoordsA = lines['Piccadilly']['A'] 
-            let piccadillyCoordsB = lines['Piccadilly']['B'] 
-            let piccadillyCoordsC = lines['Piccadilly']['C'] 
-    
+            let piccadillyCoordsA = lines['Piccadilly']['A']
+            let piccadillyCoordsB = lines['Piccadilly']['B']
+            let piccadillyCoordsC = lines['Piccadilly']['C']
+
 
             var piccadillyA = {
                 "type": "LineString",
                 "coordinates": piccadillyCoordsA
             };
-            
+
             var piccadillyB = {
                 "type": "LineString",
                 "coordinates": piccadillyCoordsB
             };
-            
+
             var piccadillyC = {
                 "type": "LineString",
                 "coordinates": piccadillyCoordsC
@@ -232,64 +310,78 @@
 
             L.geoJSON(piccadillyA, {
                 style: piccadillyStyle
-                }).addTo(mymap); 
+                }).addTo(mymap);
 
-        
+
             L.geoJSON(piccadillyB, {
                 style: piccadillyStyle
-                }).addTo(mymap); 
+                }).addTo(mymap);
 
-            
+
             L.geoJSON(piccadillyC, {
                 style: piccadillyStyle
-                }).addTo(mymap); 
-            })
-            
-        
-        
+                }).addTo(mymap);
+
+
+
+            //Victoria
+            let victoriaCoords = lines['Victoria']
+
+            var victoria = {
+                "type": "LineString",
+                "coordinates": victoriaCoords
+            };
+
+            L.geoJSON(victoria, {
+                style: victoriaStyle
+                }).addTo(mymap);
+
+
+        })
+
         function drawStop(easting, northing, markerText){
             let marker = L.circle([easting, northing], {
             color: 'black',
             fillColor: 'white',
-            fillOpacity: 0.5,
+            fillOpacity: 1,
             radius: 50
             }).bindPopup(markerText);
-                        
+
             marker.on('mouseover', function (e) {
                 this.openPopup();
             });
-                        
+
             marker.on('mouseout', function (e) {
                 this.closePopup();
             });
-                    
+
             marker.addTo(mymap);
         }
-        
-        
-        
-        
-        
+
+
+
+
+
         stops = Stops().then(function(result){
-            
+
             let stopList = result;
-            
+
             for (let i in stopList){
                 thisStop = stopList[i]
                 drawStop(thisStop['lat'], thisStop['lon'], thisStop['name'])
             }
-            
+
         })
-        
-      /*
+
+
         tubeStopList = tube_stop_list().then(function(result){
-            
+
                 let stopList = result
                 for (let i in stopList){
                     let search = stopList[i]['Name']
-                    
+
                     tubeStop = tfl_api_search(search).then(function(result){
-                            
+
                             //console.log(result)
                             let stop = result['matches'][0]
                             //console.log(stop)
@@ -297,85 +389,85 @@
                             let northing = stop['lon'];
                             let id = stop['id']
                             let name = stop['name'];
-                        
-                            
+
+
                             let ug_name_test = name.substring(name.length - 20, name.length);
                             if (ug_name_test == ' Underground Station'){
                                 name = name.substring(0, name.length - 20)
                             }
-                        
+
                             tfl_arrivals_call = tfl_arrival(id).then(function(result){
                                 let arrivals = result;
                                 let arrSummary = [];
-                                
+
                                 if (name == 'London Bridge'){
                                     console.log(arrSummary);
                                     console.log(id);
                                 }
-                                
+
                                 for (let k in arrivals){
                                     arrSummary.push([arrivals[k]['lineName'], arrivals[k]['towards'], Math.round(arrivals[k]['timeToStation']/60)])
                                 }
                                 arrSummary = arrSummary.sort(function(a,b){return a[2]>b[2];});
-                                
+
                                 function Comparator(a, b) {
                                     if (a[2] < b[2]) return -1;
                                     if (a[2] > b[2]) return 1;
                                     return 0;
                                 }
-                                
+
                                 arrSummary = arrSummary.sort(Comparator);
-                                
+
                                 let markerText = "<u><b>" + name + "</b></u>"
-                            
-                                
+
+
                                 for (let l in arrSummary){
-                                    markerText = markerText + "<br><br><b>" + arrSummary[l][2] + " mins </b>" 
+                                    markerText = markerText + "<br><br><b>" + arrSummary[l][2] + " mins </b>"
                                         + "<br>" + arrSummary[l][0] + "  -  " + arrSummary[l][1];
                                     if (l == 4) {
                                         break
                                     }
                                 }
-                                
-                            
-                        
+
+
+
                                 let marker = L.circle([easting, northing], {
                                     color: 'black',
                                     fillColor: 'white',
                                     fillOpacity: 0.5,
                                     radius: 50
                                     }).bindPopup(markerText);
-                        
+
                                 marker.on('mouseover', function (e) {
                                     this.openPopup();
                                 });
-                        
+
                                 marker.on('mouseout', function (e) {
                                     this.closePopup();
                                 });
-                    
+
                                 marker.addTo(mymap);
-                                
-                                
+
+
                             })
-                        
-                        
+
+
                     })
-                    
+
                 }
-            
-            
-            
-            
-            
+
+
+
+
+
         })
-        */
 
-        
 
-        
-   
+
+
+
+
 
     </script>
-    
+
 </html>
